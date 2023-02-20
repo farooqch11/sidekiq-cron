@@ -45,7 +45,7 @@ module Sidekiq
 
       # Enqueue cron job to queue.
       def enque! time = Time.now.utc
-        @last_enqueue_time = time.strftime(LAST_ENQUEUE_TIME_FORMAT)
+        @last_enqueue_time = time
 
         klass_const =
             begin
@@ -479,7 +479,7 @@ module Sidekiq
       def add_jid_history(jid)
         jid_history = {
           jid: jid,
-          enqueued: @last_enqueue_time
+          enqueued: @last_enqueue_time.strftime(LAST_ENQUEUE_TIME_FORMAT)
         }
 
         @history_size ||= (Sidekiq::Options[:cron_history_size] || 10).to_i - 1
@@ -651,6 +651,7 @@ module Sidekiq
 
       # Give Hash returns array for using it for redis.hmset
       def hash_to_redis hash
+        hash[:last_enqueue_time] = hash[:last_enqueue_time]&.strftime(LAST_ENQUEUE_TIME_FORMAT)
         hash.flat_map{ |key, value| [key, value || ""] }
       end
     end
