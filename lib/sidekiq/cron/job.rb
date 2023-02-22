@@ -472,7 +472,7 @@ module Sidekiq
       def save_last_enqueue_time
         Sidekiq.redis do |conn|
           # Update last enqueue time.
-          conn.hset redis_key, 'last_enqueue_time', @last_enqueue_time
+          conn.hset redis_key, 'last_enqueue_time', @last_enqueue_time.strftime(LAST_ENQUEUE_TIME_FORMAT)
         end
       end
 
